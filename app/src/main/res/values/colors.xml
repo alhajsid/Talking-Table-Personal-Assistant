@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E51400</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="mcolor">#E51400</color>
+    <color name="mlackcolor">#000</color>
+    <color name="indigo">#7986cb</color>
+    <color name="lightblack">#B1B1B1</color>
+</resources>

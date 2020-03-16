@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "905367610026",
+    "firebase_url": "https://jarvis-24c8e.firebaseio.com",
+    "project_id": "jarvis-24c8e",
+    "storage_bucket": "jarvis-24c8e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905367610026:android:ff39eef1132be69631a6d3",
+        "android_client_info": {
+          "package_name": "com.example.demospeechrecognization"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "905367610026-ad0j6id125cmt60ohka0ecjtk6sq9t05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKYtYkvuOZUYLFN3TjZCk15M3I78QfbBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "905367610026-ad0j6id125cmt60ohka0ecjtk6sq9t05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
