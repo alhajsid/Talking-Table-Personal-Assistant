@@ -2,6 +2,8 @@ package com.example.demospeechrecognization.AI
 
 import android.content.Context
 import android.text.format.DateUtils
+import android.util.Log
+import android.widget.Toast
 import com.example.demospeechrecognization.MainActivity
 import java.util.*
 import kotlin.collections.HashMap
@@ -162,22 +164,91 @@ fun AIlerner(context: Context, command: String): String {
     }
     //good
     if (command.indexOf("good") != -1) {
-        if (command.indexOf("evening") != -1) {
-            return ("Good evening Boss.")
+        if (command.indexOf("evening") != -1||command.indexOf("afternoon") != -1||command.indexOf("morning") != -1||command.indexOf("night") != -1) { val time = DateUtils.formatDateTime(
+            context, Date().time,
+            DateUtils.FORMAT_SHOW_TIME
+        )
+            var greetingType=""
+            var konstant = 0
+            var currenthour = 0
+
+            for (p in time) {
+                if (konstant == 0) {
+                    currenthour = p.toString().toInt()
+                }
+                if (konstant == 1 && p != ':') {
+                    currenthour = currenthour * 10 + p.toString().toInt()
+                }
+                konstant = konstant + 1
+            }
+            Log.e("houraj", currenthour.toString())
+            if(time.indexOf("a.m.")!=-1||time.indexOf("p.m.")!=-1){
+                if (time.indexOf("a.m.") != -1 && currenthour >= 5 && currenthour <= 11) {
+                    greetingType=("Good morning Boss.")
+                } else if (time.indexOf("p.m.") != -1 && currenthour == 12) {
+                    greetingType=("Good afternoon Boss.")
+                } else if (time.indexOf("p.m.") != -1 && currenthour >= 1 && currenthour <= 4) {
+                    greetingType=("Good afternoon Boss.")
+                } else if (time.indexOf("p.m.") != -1 && currenthour >= 5 && currenthour <= 9) {
+                    greetingType=("Good evening Boss.")
+                } else {
+                    greetingType=("Good night Boss.")
+                }
+            }
+            else if(time.indexOf("AM")!=-1||time.indexOf("PM")!=-1){
+                if (time.indexOf("AM") != -1 && currenthour >= 5 && currenthour <= 11) {
+                    greetingType=("Good morning Boss.")
+                } else if (time.indexOf("PM") != -1 && currenthour == 12) {
+                    greetingType=("Good afternoon Boss.")
+                } else if (time.indexOf("PM") != -1 && currenthour >= 1 && currenthour <= 4) {
+                    greetingType=("Good afternoon Boss.")
+                } else if (time.indexOf("PM") != -1 && currenthour >= 5 && currenthour <= 9) {
+                    greetingType=("Good evening Boss.")
+                } else {
+                    greetingType=("Good night Boss.")
+                }
+            }
+            else if(time.indexOf("am")!=-1||time.indexOf("pm")!=-1){
+                if (time.indexOf("am") != -1 && currenthour >= 5 && currenthour <= 11) {
+                    greetingType=("Good morning Boss.")
+                } else if (time.indexOf("pm") != -1 && currenthour == 12) {
+                    greetingType=("Good afternoon Boss.")
+                } else if (time.indexOf("pm") != -1 && currenthour >= 1 && currenthour <= 4) {
+                    greetingType=("Good afternoon Boss.")
+                } else if (time.indexOf("pm") != -1 && currenthour >= 5 && currenthour <= 9) {
+                    greetingType=("Good evening Boss.")
+                } else {
+                    greetingType=("Good night Boss.")
+                }
+            }
+
+            if(greetingType.indexOf("morning")!=-1){
+                if(!(command.indexOf("morning")!=-1)){
+                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                }
+            }
+            if(greetingType.indexOf("afternoon")!=-1){
+                if(!(command.indexOf("afternoon")!=-1)){
+                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                }
+            }
+            if(greetingType.indexOf("evening")!=-1){
+                if(!(command.indexOf("evening")!=-1)){
+                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                }
+            }
+            if(greetingType.indexOf("night")!=-1){
+                if(!(command.indexOf("night")!=-1)){
+                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                }
+            }
+            return greetingType
+
+
+
 
         }
-        if (command.indexOf("afternoon") != -1) {
-            return ("Good afternoon Boss.")
 
-        }
-        if (command.indexOf("morning") != -1) {
-            return ("Good morning Boss.")
-
-        }
-        if (command.indexOf("night") != -1) {
-            return ("Good night Boss.")
-
-        }
         if (command.indexOf("weather") != -1) {
             return ("You should go out Boss.")
         }

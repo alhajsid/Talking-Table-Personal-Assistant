@@ -388,8 +388,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         Log1.e("greetingmeesage", "111")
         val random: Int = (System.currentTimeMillis() % 10).toInt()
         when (random) {
-            1 -> greetingspeak("Hello Boss.")
-            2 -> greetingspeak("Hi Boss.")
             3 -> greetingspeak("Assala walekum Boss.")
             4 -> greetingspeak("Hey Boss.")
             5 -> greetingspeak("Welcome Boss.")
@@ -400,6 +398,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 )
                 var konstant = 0
                 var currenthour = 0
+                Toast.makeText(this,time.toString(),Toast.LENGTH_SHORT).show()
 
                 for (p in time) {
                     if (konstant == 0) {
@@ -432,6 +431,19 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     } else if (time.indexOf("PM") != -1 && currenthour >= 1 && currenthour <= 4) {
                         greetingspeak("Good afternoon Boss.")
                     } else if (time.indexOf("PM") != -1 && currenthour >= 5 && currenthour <= 9) {
+                        greetingspeak("Good evening Boss.")
+                    } else {
+                        greetingspeak("Good night Boss.")
+                    }
+                }
+                else if(time.indexOf("am")!=-1||time.indexOf("pm")!=-1){
+                    if (time.indexOf("am") != -1 && currenthour >= 5 && currenthour <= 11) {
+                        greetingspeak("Good morning Boss.")
+                    } else if (time.indexOf("pm") != -1 && currenthour == 12) {
+                        greetingspeak("Good afternoon Boss.")
+                    } else if (time.indexOf("pm") != -1 && currenthour >= 1 && currenthour <= 4) {
+                        greetingspeak("Good afternoon Boss.")
+                    } else if (time.indexOf("pm") != -1 && currenthour >= 5 && currenthour <= 9) {
                         greetingspeak("Good evening Boss.")
                     } else {
                         greetingspeak("Good night Boss.")
