@@ -1,11 +1,9 @@
 package com.example.demospeechrecognization
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_setting.*
 
 class SettingActivity : AppCompatActivity() {
@@ -23,6 +21,7 @@ class SettingActivity : AppCompatActivity() {
             applyDarkTheme()
             switch_theme.isChecked=true
         }
+
         switch_volume_wake.setOnCheckedChangeListener { compoundButton, b ->
             if (b){
                 val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE).edit()
@@ -34,6 +33,7 @@ class SettingActivity : AppCompatActivity() {
                 sharedPresent.apply()
             }
         }
+
         switch_theme.setOnCheckedChangeListener { compoundButton, b ->
             if (b){
                 val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE).edit()
@@ -48,8 +48,8 @@ class SettingActivity : AppCompatActivity() {
             }
         }
 
-
     }
+
     fun applyDarkTheme(){
         setting_container.setBackgroundColor(Color.parseColor("#000000"))
         theme_container.setBackgroundColor(Color.parseColor("#000000"))
@@ -66,6 +66,7 @@ class SettingActivity : AppCompatActivity() {
         divider_3.setBackgroundColor(Color.parseColor("#70ffffff"))
         divider_4.setBackgroundColor(Color.parseColor("#70ffffff"))
     }
+
     fun applyLightTheme(){
         setting_container.setBackgroundColor(Color.parseColor("#ffffff"))
         theme_container.setBackgroundColor(Color.parseColor("#ffffff"))
@@ -82,4 +83,5 @@ class SettingActivity : AppCompatActivity() {
         divider_3.setBackgroundColor(Color.parseColor("#B1B1B1"))
         divider_4.setBackgroundColor(Color.parseColor("#B1B1B1"))
     }
+
 }

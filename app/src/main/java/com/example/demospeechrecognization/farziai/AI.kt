@@ -1,9 +1,8 @@
-package com.example.demospeechrecognization.AI
+package com.example.demospeechrecognization.farziai
 
 import android.content.Context
 import android.text.format.DateUtils
 import android.util.Log
-import android.widget.Toast
 import com.example.demospeechrecognization.MainActivity
 import java.util.*
 import kotlin.collections.HashMap
@@ -73,14 +72,14 @@ fun AIlerner(context: Context, command: String): String {
                 resultscontects.add(contacts[i+1])
             }
         }
-        MainActivity.resultcontact=resultscontects
+        MainActivity.contactList=resultscontects
         val aj=HashMap<String,String>()
         for(i in 0..resultscontects.size-1) {
             if(i%2==0)
             aj.put(resultscontects[i+1],resultscontects[i])
         }
         if(aj.size==1){
-            MainActivity.thatnum=resultscontects[1]
+            MainActivity.contactNumber=resultscontects[1]
             return "makecallonthat"
 
         }
