@@ -24,7 +24,6 @@ import android.speech.tts.Voice
 import android.view.KeyEvent
 import android.view.View
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.demospeechrecognization.farziai.AIlerner
@@ -336,9 +335,9 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     val results = bundle.getStringArrayList(
                         SpeechRecognizer.RESULTS_RECOGNITION
                     )
-                    val finalresult = results!!.get(0).toLowerCase()
+                    val finalresult = results!![0].toLowerCase(Locale.getDefault())
                     choosingResult(finalresult)
-                    amount = amount - 1
+                    amount -= 1
                 }
 
                 override fun onPartialResults(bundle: Bundle) {
@@ -419,7 +418,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         finalresult = finalresult.replace(" song ", "")
         finalresult = finalresult.replace("song ", "")
         localSongsList.forEach {
-            if (it.aName.toLowerCase().indexOf(finalresult) != -1) {
+            if (it.aName.toLowerCase(Locale.getDefault()).indexOf(finalresult) != -1) {
                 val aj = Intent()
                 aj.putExtra("songname", finalresult)
                 aj.component = ComponentName(
@@ -466,8 +465,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun greetingMessage() {
 
         Log1.e("greetingmeesage", "111")
-        val random: Int = (System.currentTimeMillis() % 10).toInt()
-        when (random) {
+        when ((System.currentTimeMillis() % 10).toInt()) {
             3 -> speakGreeting("Assala walekum Boss.")
             4 -> speakGreeting("Hey Boss.")
             5 -> speakGreeting("Welcome Boss.")
@@ -487,7 +485,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     if (konstant == 1 && p != ':') {
                         currenthour = currenthour * 10 + p.toString().toInt()
                     }
-                    konstant = konstant + 1
+                    konstant += 1
                 }
                 Log1.e("houraj", currenthour.toString())
                 if (time.indexOf("a.m.") != -1 || time.indexOf("p.m.") != -1) {
@@ -527,8 +525,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                         speakGreeting("Good night Boss.")
                     }
                 }
-
-
             }
             // else->speak("Jai hind Boss.")
         }
@@ -596,7 +592,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         mrunnable = Runnable() {
 
-            if (!myTTS.isSpeaking()) {
+            if (!myTTS.isSpeaking) {
                 h.removeCallbacks(mrunnable)
                 onTTSSpeechFinished();
                 Log1.e("isttsspeaking", "")
@@ -649,6 +645,5 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         } catch (e: Exception) {
         }
     }
-
 
 }
