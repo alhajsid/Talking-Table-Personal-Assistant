@@ -24,8 +24,8 @@ class LoginActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
-
         setContentView(R.layout.activity_login)
+
         textViewcreateaccounr.setOnClickListener {
             startActivity(Intent(this,CreateAccountActivity::class.java))
             finish()
@@ -35,9 +35,7 @@ class LoginActivity : AppCompatActivity() {
             loginuser()
         }
 
-
     }
-
 
     fun loginuser(){
         if (editTextemaillogin.text.isEmpty()||editTextloginpassword.text.isEmpty()){

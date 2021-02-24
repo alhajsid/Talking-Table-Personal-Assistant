@@ -29,11 +29,11 @@ class CreateAccountActivity : AppCompatActivity() {
             finish()
         }
         buttonsignup.setOnClickListener {
-            registeruser()
+            registerUser()
         }
     }
 
-    fun registeruser(){
+    fun registerUser(){
         if (editTextemailsignup.text.isEmpty()||editTextsignuppass.text.isEmpty()||editTextusernamesignup.text.isEmpty()){
             editTextsignuppass.error="Enter text"
             return

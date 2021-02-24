@@ -6,8 +6,6 @@ class PayloadThink(val output:String)
 
 class ErrorThink(val error_code:Int,val type:String,val message:String)
 
-
-
 //{
 //    "success": true,
 //    "response_code": 200,

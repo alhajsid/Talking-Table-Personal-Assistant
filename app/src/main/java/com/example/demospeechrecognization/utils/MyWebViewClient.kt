@@ -5,8 +5,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-class MyWebViewClient(context: Context) : WebViewClient() {
-    val context = context
+class MyWebViewClient(val context: Context) : WebViewClient() {
+
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         view?.loadUrl(request?.url.toString())
         return true

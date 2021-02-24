@@ -7,10 +7,9 @@ import com.example.demospeechrecognization.MainActivity
 import java.util.*
 import kotlin.collections.HashMap
 
-fun AIlerner(context: Context, command: String): String {
+fun Ailearning(context: Context, command: String): String {
 
     if(command.indexOf("play ")!=-1){
-
         return command
     }
     if(command.indexOf("pause")!=-1){
@@ -34,12 +33,10 @@ fun AIlerner(context: Context, command: String): String {
             return "Turning off bluetooth."
         }
         if(command.indexOf("wi-fi")!=-1){
-
             moility("off","wi-fi")
             return "Turning off wi-fi."
         }
         if(command.indexOf("flashlight")!=-1){
-
             moility("off","flashlight")
             return "Turning off flashlight."
         }
@@ -62,41 +59,39 @@ fun AIlerner(context: Context, command: String): String {
 
     //call contacts
     if(command.indexOf("call ")!=-1){
-
-        val resultscontects=ArrayList<String>()
-        val command=command.replace("call ","")
+        val resultContects=ArrayList<String>()
+        val replacedCommand=command.replace("call ","")
         val contacts=MainActivity.contacts
-        for(i in 0..contacts.size-1){
-            if(contacts[i].toLowerCase().indexOf(command)!=-1){
-                resultscontects.add(contacts[i])
-                resultscontects.add(contacts[i+1])
+        for(i in 0 until contacts.size){
+            if(contacts[i].toLowerCase(Locale.getDefault()).indexOf(replacedCommand)!=-1){
+                resultContects.add(contacts[i])
+                resultContects.add(contacts[i+1])
             }
         }
-        MainActivity.contactList=resultscontects
+        MainActivity.contactList=resultContects
         val aj=HashMap<String,String>()
-        for(i in 0..resultscontects.size-1) {
+        for(i in 0 until resultContects.size) {
             if(i%2==0)
-            aj.put(resultscontects[i+1],resultscontects[i])
+                aj[resultContects[i+1]] = resultContects[i]
         }
-        if(aj.size==1){
-            MainActivity.contactNumber=resultscontects[1]
-            return "makecallonthat"
-
+        return when (aj.size) {
+            1 -> {
+                MainActivity.contactNumber=resultContects[1]
+                "makecallonthat"
+            }
+            0 -> {
+                "makecallonthat2$replacedCommand"
+            }
+            else -> {
+                "makecallonthat3$replacedCommand"
+            }
         }
-        else if(aj.size==0){
-            return "makecallonthat2"+command
-        }
-        else{
-            return "makecallonthat3"+command
-        }
-
     }
-
 
     //search webView
     if(command.indexOf("search ")!=-1){
-        val command=command.replace("search ","")
-        return "searchitfriday"+command
+        val replacedCommand=command.replace("search ","")
+        return "searchitfriday$replacedCommand"
     }
 
     // if(command.indexOf("stock")!=-1||command.indexOf("price")!=-1){
@@ -106,14 +101,9 @@ fun AIlerner(context: Context, command: String): String {
     //what
     if (command.indexOf("what") != -1) {
         if (command.indexOf("your name") != -1) {
-            val time = DateUtils.formatDateTime(
-                context, Date().time,
-                DateUtils.FORMAT_SHOW_TIME
-            )
-            val random: Int = (System.currentTimeMillis() % 10).toInt()
-            when (random) {
-                1, 2, 3, 4, 5 -> return ("I am friday.")
-                else -> return ("friday, Boss")
+            return when ((System.currentTimeMillis() % 10).toInt()) {
+                1, 2, 3, 4, 5 -> ("I am friday.")
+                else -> ("friday, Boss")
             }
 
         }
@@ -122,20 +112,17 @@ fun AIlerner(context: Context, command: String): String {
                 context, Date().time,
                 DateUtils.FORMAT_SHOW_TIME
             )
-            val random: Int = (System.currentTimeMillis() % 10).toInt()
-            when (random) {
-                1, 5 -> return ("Boss its " + time)
-                2, 6 -> return ("Its " + time)
-                3, 7 -> return ("Boss time is very good and also " + time)
-                else -> return ("Time is " + time)
+            return when ((System.currentTimeMillis() % 10).toInt()) {
+                1, 5 -> ("Boss its $time")
+                2, 6 -> ("Its $time")
+                3, 7 -> ("Boss time is very good and also $time")
+                else -> ("Time is $time")
             }
 
         }
 
         if (command.indexOf("my name") != -1) {
-
             return ("Your are Alhaj ")
-
         }
     }
     //who
@@ -178,73 +165,70 @@ fun AIlerner(context: Context, command: String): String {
                 if (konstant == 1 && p != ':') {
                     currenthour = currenthour * 10 + p.toString().toInt()
                 }
-                konstant = konstant + 1
+                konstant += 1
             }
             Log.e("houraj", currenthour.toString())
             if(time.indexOf("a.m.")!=-1||time.indexOf("p.m.")!=-1){
-                if (time.indexOf("a.m.") != -1 && currenthour >= 5 && currenthour <= 11) {
-                    greetingType=("Good morning Boss.")
+                greetingType = if (time.indexOf("a.m.") != -1 && currenthour >= 5 && currenthour <= 11) {
+                    ("Good morning Boss.")
                 } else if (time.indexOf("p.m.") != -1 && currenthour == 12) {
-                    greetingType=("Good afternoon Boss.")
+                    ("Good afternoon Boss.")
                 } else if (time.indexOf("p.m.") != -1 && currenthour >= 1 && currenthour <= 4) {
-                    greetingType=("Good afternoon Boss.")
+                    ("Good afternoon Boss.")
                 } else if (time.indexOf("p.m.") != -1 && currenthour >= 5 && currenthour <= 9) {
-                    greetingType=("Good evening Boss.")
+                    ("Good evening Boss.")
                 } else {
-                    greetingType=("Good night Boss.")
+                    ("Good night Boss.")
                 }
             }
             else if(time.indexOf("AM")!=-1||time.indexOf("PM")!=-1){
-                if (time.indexOf("AM") != -1 && currenthour >= 5 && currenthour <= 11) {
-                    greetingType=("Good morning Boss.")
+                greetingType = if (time.indexOf("AM") != -1 && currenthour >= 5 && currenthour <= 11) {
+                    ("Good morning Boss.")
                 } else if (time.indexOf("PM") != -1 && currenthour == 12) {
-                    greetingType=("Good afternoon Boss.")
+                    ("Good afternoon Boss.")
                 } else if (time.indexOf("PM") != -1 && currenthour >= 1 && currenthour <= 4) {
-                    greetingType=("Good afternoon Boss.")
+                    ("Good afternoon Boss.")
                 } else if (time.indexOf("PM") != -1 && currenthour >= 5 && currenthour <= 9) {
-                    greetingType=("Good evening Boss.")
+                    ("Good evening Boss.")
                 } else {
-                    greetingType=("Good night Boss.")
+                    ("Good night Boss.")
                 }
             }
             else if(time.indexOf("am")!=-1||time.indexOf("pm")!=-1){
-                if (time.indexOf("am") != -1 && currenthour >= 5 && currenthour <= 11) {
-                    greetingType=("Good morning Boss.")
+                greetingType = if (time.indexOf("am") != -1 && currenthour >= 5 && currenthour <= 11) {
+                    ("Good morning Boss.")
                 } else if (time.indexOf("pm") != -1 && currenthour == 12) {
-                    greetingType=("Good afternoon Boss.")
+                    ("Good afternoon Boss.")
                 } else if (time.indexOf("pm") != -1 && currenthour >= 1 && currenthour <= 4) {
-                    greetingType=("Good afternoon Boss.")
+                    ("Good afternoon Boss.")
                 } else if (time.indexOf("pm") != -1 && currenthour >= 5 && currenthour <= 9) {
-                    greetingType=("Good evening Boss.")
+                    ("Good evening Boss.")
                 } else {
-                    greetingType=("Good night Boss.")
+                    ("Good night Boss.")
                 }
             }
 
             if(greetingType.indexOf("morning")!=-1){
-                if(!(command.indexOf("morning")!=-1)){
-                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                if(command.indexOf("morning") == -1){
+                    return ("sir please don't use weed nest time, weed don't suit you, its $greetingType")
                 }
             }
             if(greetingType.indexOf("afternoon")!=-1){
-                if(!(command.indexOf("afternoon")!=-1)){
-                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                if(command.indexOf("afternoon") == -1){
+                    return ("sir please don't use weed nest time, weed don't suit you, its $greetingType")
                 }
             }
             if(greetingType.indexOf("evening")!=-1){
-                if(!(command.indexOf("evening")!=-1)){
-                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                if(command.indexOf("evening") == -1){
+                    return ("sir please don't use weed nest time, weed don't suit you, its $greetingType")
                 }
             }
             if(greetingType.indexOf("night")!=-1){
-                if(!(command.indexOf("night")!=-1)){
-                    return ("sir please don't use weed nest time, weed don't suit you, its "+greetingType)
+                if(command.indexOf("night") == -1){
+                    return ("sir please don't use weed nest time, weed don't suit you, its $greetingType")
                 }
             }
             return greetingType
-
-
-
 
         }
 
@@ -253,7 +237,6 @@ fun AIlerner(context: Context, command: String): String {
         }
         if (command.indexOf("mood") != -1) {
             return ("this is very good Boss")
-
         }
 
     }
@@ -268,25 +251,23 @@ fun AIlerner(context: Context, command: String): String {
         ) != -1 || command.indexOf("ass") != -1 || command.indexOf("blow job") != -1 || command.indexOf("t********") != -1
     ) {
 
-        val random: Int = (System.currentTimeMillis() % 10).toInt()
-        when (random) {
-            1, 5 -> return ("I don't want to talk about this.")
-            2, 6 -> return ("I don't like it Boss.")
-            3, 7 -> return ("this is too much Boss.")
-            4, 8 -> return ("Boss you belong to very respected family")
-            else -> return ("I don't know Boss.")
+        return when ((System.currentTimeMillis() % 10).toInt()) {
+            1, 5 -> ("I don't want to talk about this.")
+            2, 6 -> ("I don't like it Boss.")
+            3, 7 -> ("this is too much Boss.")
+            4, 8 -> ("Boss you belong to very respected family")
+            else -> ("I don't know Boss.")
         }
 
     }
     //greetings
     if (command.indexOf("hello") != -1 || command.indexOf("hi ") != -1 || command.indexOf("hey") != -1) {
-        val random: Int = (System.currentTimeMillis() % 10).toInt()
-        when (random) {
-            1, 5 -> return ("Hello Boss.")
-            2, 6 -> return ("Hi Boss.")
-            3, 7 -> return ("Assalawalekum Boss.")
-            4, 8 -> return ("Hey Boss.")
-            else -> return ("Jai hind Boss.")
+        return when ((System.currentTimeMillis() % 10).toInt()) {
+            1, 5 -> ("Hello Boss.")
+            2, 6 -> ("Hi Boss.")
+            3, 7 -> ("Assalawalekum Boss.")
+            4, 8 -> ("Hey Boss.")
+            else -> ("Jai hind Boss.")
         }
     }
      //   else if(command.indexOf("what ") != -1 ||command.indexOf("why ") != -1 ||command.indexOf("who ") != -1 ||command.indexOf("when ") != -1 ||command.indexOf("whom ") != -1 ||command.indexOf("how ") != -1 ||command.indexOf("where") != -1 ||command.indexOf("which ") != -1 ||command.indexOf("whose ") != -1 ){
@@ -304,12 +285,12 @@ fun AIlerner(context: Context, command: String): String {
             else -> return ("I don't know Boss?")
         }
 */
-        return "chatbot"+command
+        return "chatbot$command"
     }
 
 
 }
 fun moility(a:String,b:String):String{
-    return a+" "+b
+    return "$a $b"
 }
 

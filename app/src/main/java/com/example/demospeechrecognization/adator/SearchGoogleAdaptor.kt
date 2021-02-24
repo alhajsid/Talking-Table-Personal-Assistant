@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.searchlayout.view.*
 
 
 class SearchGoogleAdaptor(val text: String, val context: Context) : Item<ViewHolder>() {
+
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.webveiwsearch.webViewClient = MyWebViewClient(context)
         viewHolder.itemView.webveiwsearch.loadUrl("https://www.google.com/search?q=" + text)
@@ -20,4 +21,5 @@ class SearchGoogleAdaptor(val text: String, val context: Context) : Item<ViewHol
     override fun getLayout(): Int {
         return R.layout.searchlayout
     }
+
 }

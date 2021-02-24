@@ -114,14 +114,11 @@ class MainService : Service() {
 //    }
 
     private fun getContacts() {
-
         val contactList = ArrayList<String>()
-
         AsyncClass {
-
             val builder = StringBuilder()
 
-            val resolver: ContentResolver = contentResolver;
+            val resolver: ContentResolver = contentResolver
             val cursor = resolver.query(
                 ContactsContract.Contacts.CONTENT_URI, null, null, null,
                 null

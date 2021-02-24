@@ -8,7 +8,7 @@ import android.content.Context
 
 var volumePrev = 0
 
-private val broadcastReceiver = object : BroadcastReceiver() {
+private val BroadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         if ("android.media.VOLUME_CHANGED_ACTION" == intent.action) {

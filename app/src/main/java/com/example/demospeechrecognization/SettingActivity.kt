@@ -22,35 +22,28 @@ class SettingActivity : AppCompatActivity() {
             switch_theme.isChecked=true
         }
 
-        switch_volume_wake.setOnCheckedChangeListener { compoundButton, b ->
+        switch_volume_wake.setOnCheckedChangeListener { _, b ->
             if (b){
-                val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE).edit()
-                sharedPresent.putInt("volume_wake",1)
-                sharedPresent.apply()
+                sharedPresent.edit()
+                    .putInt("volume_wake",1).apply()
             }else{
-                val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE).edit()
-                sharedPresent.putInt("volume_wake",0)
-                sharedPresent.apply()
+                sharedPresent.edit().putInt("volume_wake",0).apply()
             }
         }
 
-        switch_theme.setOnCheckedChangeListener { compoundButton, b ->
+        switch_theme.setOnCheckedChangeListener { _, b ->
             if (b){
-                val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE).edit()
-                sharedPresent.putInt("theme",1)
-                sharedPresent.apply()
+                sharedPresent.edit().putInt("theme",1).apply()
                 applyDarkTheme()
             }else{
-                val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE).edit()
-                sharedPresent.putInt("theme",0)
-                sharedPresent.apply()
+                sharedPresent.edit().putInt("theme",0).apply()
                 applyLightTheme()
             }
         }
 
     }
 
-    fun applyDarkTheme(){
+    private fun applyDarkTheme(){
         setting_container.setBackgroundColor(Color.parseColor("#000000"))
         theme_container.setBackgroundColor(Color.parseColor("#000000"))
         volume_up_container.setBackgroundColor(Color.parseColor("#000000"))
@@ -67,7 +60,7 @@ class SettingActivity : AppCompatActivity() {
         divider_4.setBackgroundColor(Color.parseColor("#70ffffff"))
     }
 
-    fun applyLightTheme(){
+    private fun applyLightTheme(){
         setting_container.setBackgroundColor(Color.parseColor("#ffffff"))
         theme_container.setBackgroundColor(Color.parseColor("#ffffff"))
         volume_up_container.setBackgroundColor(Color.parseColor("#ffffff"))

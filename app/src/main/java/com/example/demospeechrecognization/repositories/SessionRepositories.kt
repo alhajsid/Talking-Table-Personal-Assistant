@@ -14,7 +14,7 @@ class SessionRepositories {
     private var instance: SessionRepositories?=null
     lateinit var session:GetSessionModel
     lateinit var thinkThoughtModel: ThinkThoughtModel
-    var language="en"
+    private var language="en"
 
     fun getInstance(): SessionRepositories {
         if (instance==null){

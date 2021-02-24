@@ -26,7 +26,7 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.demospeechrecognization.farziai.AIlerner
+import com.example.demospeechrecognization.farziai.Ailearning
 import com.example.demospeechrecognization.ViewModel.MainActivityViewModel
 import com.example.demospeechrecognization.adator.ContactAdaptor
 import com.example.demospeechrecognization.adator.JarvisAdaptor
@@ -50,21 +50,17 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         var contacts = ArrayList<String>()
         var contactNumber = ""
         var contactList = ArrayList<String>()
-
-        //        val urlforcreatesession = "https://api.intellivoid.info/coffeehouse/v2/createSession" //old
-//        val urlforcreatesession = "https://api.intellivoid.net/coffeehouse/v1/lydia/session/create"
         var sessionId: String = ""
-//        val apikey = "2b3ca346ef86ec29053b3b4db2de22635da2c10885a0e97a71599052fa89c31aa011828e"
         var localSongsList = ArrayList<AudioModel>()
     }
 
-    val api_key="4f8c34291fc7d0ca9902584930f9c3e29c35c5c9a48167e15db68f994c4492ea1fdaa9999e69c328dca2d23e6fd4114e336012f4beeed183d0a7bdf35317ddfb"
+    private val accessKey="4f8c34291fc7d0ca9902584930f9c3e29c35c5c9a48167e15db68f994c4492ea1fdaa9999e69c328dca2d23e6fd4114e336012f4beeed183d0a7bdf35317ddfb"
     lateinit var sharedPref: SharedPref
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private var adaptorMain = GroupAdapter<ViewHolder>()
     private lateinit var myTTS: TextToSpeech
     private lateinit var mSpeechRecognizer: SpeechRecognizer
-    var mode = ""
+    private var mode = ""
     var amount = 0
 //    val urlmessage = "https://api.intellivoid.info/coffeehouse/v2/thinkThought"
 
@@ -123,9 +119,9 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         sessionId=sharedPref.getString(sharedPref.SESSION)
         if (sessionId==""){
-            mainActivityViewModel.createSession(api_key)
+            mainActivityViewModel.createSession(accessKey)
         }else{
-            mainActivityViewModel.getSession(api_key,sessionId)
+            mainActivityViewModel.getSession(accessKey,sessionId)
         }
     }
 
@@ -150,7 +146,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                         sessionId=it.results.session_id
                         sharedPref.setString(sharedPref.SESSION,it.results.session_id)
                     }else if(it.response_code!=9876){
-                        mainActivityViewModel.createSession(api_key)
+                        mainActivityViewModel.createSession(accessKey)
                         Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
@@ -166,12 +162,15 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
             mainActivityViewModel.getIsLoading().observe(this,
                 Observer<Boolean> {
-                    if (it)
+                    if (it){
+                        fab.isClickable=false
                         txt_thinking.visibility= View.VISIBLE
-                    else
+                    }
+                    else {
+                        fab.isClickable=true
                         txt_thinking.visibility= View.GONE
+                    }
                 })
-
 
             val sharedPresent = getSharedPreferences("setting", Context.MODE_PRIVATE)
             val theme = sharedPresent.getInt("theme", 0)
@@ -182,8 +181,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 contact_main.setBackgroundColor(Color.parseColor("#ffffff"))
             }
 
-            fab.setOnClickListener { view ->
-                Log1.e("fab.onlcicklistner", mode + " " + amount.toString())
+            fab.setOnClickListener {
+                Log1.e("fab.onlcicklistner", "$mode $amount")
 
                 // unmute()
                 if (NetworkState.connectionAvailable(this)) {
@@ -243,20 +242,20 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private fun moibility(command: String) {
         if (command.indexOf("off") != -1) {
-            if (command.indexOf("bluetooth") != -1) {
-
-            }
-            if (command.indexOf("wi-fi") != -1) {
-
-            }
+//            if (command.indexOf("bluetooth") != -1) {
+//
+//            }
+//            if (command.indexOf("wi-fi") != -1) {
+//
+//            }
             if (command.indexOf("flashlight") != -1) {
                 val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
                 try {
-                    val cameraId = cameraManager.getCameraIdList()[0];
+                    val cameraId = cameraManager.cameraIdList[0]
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         cameraManager.setTorchMode(cameraId, false)
                         log("flashlight", "oned")
-                    };
+                    }
                 } catch (e: CameraAccessException) {
                     log("flashlight", e.toString())
                 }
@@ -264,21 +263,21 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
 
         if (command.indexOf("on") != -1) {
-            if (command.indexOf("bluetooth") != -1) {
-
-            }
-            if (command.indexOf("wi-fi") != -1) {
-
-            }
+//            if (command.indexOf("bluetooth") != -1) {
+//
+//            }
+//            if (command.indexOf("wi-fi") != -1) {
+//
+//            }
             if (command.indexOf("flashlight") != -1) {
                 log("flashlight", "on")
                 val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
                 try {
-                    val cameraId = cameraManager.getCameraIdList()[0];
+                    val cameraId = cameraManager.cameraIdList[0]
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         cameraManager.setTorchMode(cameraId, true)
                         log("flashlight", "oned")
-                    };
+                    }
                 } catch (e: CameraAccessException) {
                     log("flashlight", e.toString())
                 }
@@ -293,13 +292,13 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             //Voice v=new Voice("en-us-x-sfg#female_2-local",new Locale("en","US"),400,200,true,a);
             val v = Voice("en-us-x-sfg#male_2-local", Locale("en", "US"), 400, 200, true, a)
             myTTS.voice = v
-            val result1 = myTTS.setLanguage(Locale.US);
-            val result = myTTS.setVoice(v)
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+//            val result1 = myTTS.setLanguage(Locale.US);
+//            val result = myTTS.setVoice(v)
+//            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 //val installIntent = Intent()
                 //installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
                 // startActivity(installIntent)
-            }
+//            }
         } else {
             Log1.e("TTS", "Initilization Failed!")
         }
@@ -365,55 +364,55 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         Log1.d("ajtag1", command)
 
-        var finalresult = AIlerner(this, command)
+        var finalResult = Ailearning(this, command)
 
-        if (finalresult.indexOf("pause") != -1) {
-            if (command.indexOf("song") != -1) {
+//        if (finalresult.indexOf("pause") != -1) {
+//            if (command.indexOf("song") != -1) {
+//
+//            }
+//        }
+//        if (command.indexOf("next") != -1) {
+//            if (command.indexOf("song") != -1) {
+//
+//            }
+//        }
+//        if (command.indexOf("stop ") != -1) {
+//            if (command.indexOf("song") != -1) {
+//
+//            }
+//        }
 
-            }
-        }
-        if (command.indexOf("next") != -1) {
-            if (command.indexOf("song") != -1) {
-
-            }
-        }
-        if (command.indexOf("stop ") != -1) {
-            if (command.indexOf("song") != -1) {
-
-            }
-        }
-
-        if (finalresult.indexOf("play ") != -1) {
-            playSong(finalresult)
+        if (finalResult.indexOf("play ") != -1) {
+            playSong(finalResult)
             return
         }
 
-        if (finalresult.startsWith("chatbot")) {
-            finalresult = finalresult.replace("chatbot", "")
-            sendMessage(finalresult)
+        if (finalResult.startsWith("chatbot")) {
+            finalResult = finalResult.replace("chatbot", "")
+            sendMessage(finalResult)
             return
         }
 
-        if (finalresult.startsWith("Turning")) {
-            moibility(finalresult)
+        if (finalResult.startsWith("Turning")) {
+            moibility(finalResult)
         }
 
-        if (finalresult.startsWith("searchitfriday")) {
-            finalresult = finalresult.replace("searchitfriday", "")
-            adaptorMain.add(SearchGoogleAdaptor(finalresult, this))
+        if (finalResult.startsWith("searchitfriday")) {
+            finalResult = finalResult.replace("searchitfriday", "")
+            adaptorMain.add(SearchGoogleAdaptor(finalResult, this))
             rvconver.scrollToPosition(adaptorMain.itemCount - 1)
             return
         }
 
-        if (finalresult.startsWith("makecallonthat")) {
-            placeCall(finalresult)
+        if (finalResult.startsWith("makecallonthat")) {
+            placeCall(finalResult)
             return
         }
-        speak(AIlerner(this, command))
+        speak(Ailearning(this, command))
         rvconver.scrollToPosition(adaptorMain.itemCount - 1)
     }
 
-    fun playSong(s: String) {
+    private fun playSong(s: String) {
         var finalresult = s.replace("play ", "")
         finalresult = finalresult.replace(" song ", "")
         finalresult = finalresult.replace("song ", "")
@@ -450,16 +449,16 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             else -> {
                 val findNumResult = finalresult.replace("makecallonthat", "")
                 speak("Placing call to$findNumResult")
-                makecall(contactNumber)
+                makeCall(contactNumber)
             }
         }
     }
 
-    private fun makecall(s: String) {
+    private fun makeCall(s: String) {
         val callIntent = Intent(Intent.ACTION_CALL)
-        callIntent.data = Uri.parse("tel:" + s)
+        callIntent.data = Uri.parse("tel:$s")
         val chooser = Intent.createChooser(callIntent, "title")
-        startActivity(chooser);
+        startActivity(chooser)
     }
 
     private fun greetingMessage() {
@@ -532,7 +531,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun initializeTextToSpeech() {
-        myTTS = TextToSpeech(this, TextToSpeech.OnInitListener() {
+        myTTS = TextToSpeech(this, TextToSpeech.OnInitListener {
             if (myTTS.engines.size == 0) {
                 Toast.makeText(this, "your device is not supported", Toast.LENGTH_LONG).show()
                 finish()
@@ -562,7 +561,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
-    lateinit var runnable: Runnable
+    private lateinit var runnable: Runnable
     private fun speakGreeting(message: String) {
         myTTS.speak(message, TextToSpeech.QUEUE_FLUSH, null, null)
         adaptorMain.add(JarvisAdaptor(message, this))
@@ -575,33 +574,33 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 onTTSSpeechFinished()
                 return@Runnable
             }
-            h.postDelayed(runnable, 1000);
+            h.postDelayed(runnable, 1000)
         }
-        h.postDelayed(runnable, 3000);
+        h.postDelayed(runnable, 3000)
     }
 
     private fun log(a: String, b: String) {
         Log1.e(a, b)
     }
 
-    lateinit var mrunnable: Runnable
+    private lateinit var mrunnable: Runnable
 
     private fun isTTSSpeaking() {
 
         val h = Handler()
 
-        mrunnable = Runnable() {
+        mrunnable = Runnable {
 
             if (!myTTS.isSpeaking) {
                 h.removeCallbacks(mrunnable)
-                onTTSSpeechFinished();
+                onTTSSpeechFinished()
                 Log1.e("isttsspeaking", "")
                 return@Runnable
             }
-            h.postDelayed(mrunnable, 1000);
+            h.postDelayed(mrunnable, 1000)
         }
 
-        h.postDelayed(mrunnable, 3000);
+        h.postDelayed(mrunnable, 3000)
     }
 
     private fun sendMessage(s: String) {
@@ -609,7 +608,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             checkSession()
             return
         }
-        mainActivityViewModel.thinkThought(api_key, sessionId,s)
+        mainActivityViewModel.thinkThought(accessKey, sessionId,s)
     }
 
     private fun onTTSSpeechFinished() {

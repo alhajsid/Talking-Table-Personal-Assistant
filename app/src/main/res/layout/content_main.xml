@@ -26,20 +26,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/fab">
 
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:layout_height="match_parent">
-
             <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     app:srcCompat="@drawable/mic"
+                    android:padding="10dp"
                     android:id="@+id/imageButtonicon"
                     android:layout_weight="1" />
-
-        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
