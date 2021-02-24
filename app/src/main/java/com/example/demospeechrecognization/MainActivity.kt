@@ -22,7 +22,9 @@ import android.widget.Toast
 import java.util.*
 import android.speech.tts.Voice
 import android.view.KeyEvent
+import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.demospeechrecognization.farziai.AIlerner
@@ -136,9 +138,9 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             mainActivityViewModel.getCreateSessionModel().observe(this,
                 Observer<GetSessionModel> {
                     if (it.success && it.response_code==200){
-                        sessionId=it.payload.session_id
-                        sharedPref.setString(sharedPref.SESSION,it.payload.session_id)
-                    }else{
+                        sessionId=it.results.session_id
+                        sharedPref.setString(sharedPref.SESSION,it.results.session_id)
+                    }else if(it.response_code!=9876){
                         Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
@@ -146,9 +148,9 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             mainActivityViewModel.getSessionModel().observe(this,
                 Observer<GetSessionModel> {
                     if (it.success && it.response_code==200){
-                        sessionId=it.payload.session_id
-                        sharedPref.setString(sharedPref.SESSION,it.payload.session_id)
-                    }else{
+                        sessionId=it.results.session_id
+                        sharedPref.setString(sharedPref.SESSION,it.results.session_id)
+                    }else if(it.response_code!=9876){
                         mainActivityViewModel.createSession(api_key)
                         Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -157,14 +159,19 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             mainActivityViewModel.getThinkThouModel().observe(this,
                 Observer<ThinkThoughtModel> {
                     if (it.success && it.response_code==200){
-                        speak(it.payload.output)
-                    }else{
+                        speak(it.results.output)
+                    }else if(it.response_code!=9876){
                         Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
 
-            mainActivityViewModel.getIsLoading()!!.observe(this,
-                Observer<Boolean> { })
+            mainActivityViewModel.getIsLoading().observe(this,
+                Observer<Boolean> {
+                    if (it)
+                        txt_thinking.visibility= View.VISIBLE
+                    else
+                        txt_thinking.visibility= View.GONE
+                })
 
 
             val sharedPresent = getSharedPreferences("setting", Context.MODE_PRIVATE)

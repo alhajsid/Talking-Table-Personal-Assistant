@@ -1,6 +1,6 @@
 package com.example.demospeechrecognization.models
 
-data class ThinkThoughtModel(val success:Boolean,val response_code:Int,val payload:PayloadThink,val error:ErrorThink)
+data class ThinkThoughtModel(val success:Boolean,val response_code:Int,val results:PayloadThink,val error:ErrorThink)
 
 class PayloadThink(val output:String)
 

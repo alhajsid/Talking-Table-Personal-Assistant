@@ -8,13 +8,14 @@ import com.example.demospeechrecognization.repositories.SessionRepositories
 
 class MainActivityViewModel : ViewModel() {
 
-    var getSessionModel: MutableLiveData<GetSessionModel> = MutableLiveData(GetSessionModel(false,400,
+    var getSessionModel: MutableLiveData<GetSessionModel> = MutableLiveData(GetSessionModel(false,9876,
         Payload("","en",true,9876),Error(345,"dgf","dfg")))
-    var createSessionModel: MutableLiveData<GetSessionModel> =  MutableLiveData(GetSessionModel(false,400,
+    var createSessionModel: MutableLiveData<GetSessionModel> =  MutableLiveData(GetSessionModel(false,9876,
         Payload("","en",true,9876),Error(345,"df","gf")))
     var thinkThought: MutableLiveData<ThinkThoughtModel> = MutableLiveData(ThinkThoughtModel(false,9876,
         PayloadThink(""),ErrorThink(34,"sdf","sef")
     ))
+
     lateinit var mRepo: SessionRepositories
     private var mIsUpdating = MutableLiveData(false)
 
@@ -22,18 +23,18 @@ class MainActivityViewModel : ViewModel() {
         if (!this::mRepo.isInitialized) {
             mRepo = SessionRepositories().getInstance()
         }
-        mIsUpdating.postValue(true)
+        mIsUpdating.value=(true)
         getSessionModel = mRepo.getSession(api_key,sessionId)
-        mIsUpdating.postValue(false)
+        mIsUpdating.value=(false)
     }
 
     fun createSession(api_key: String) {
         if (!this::mRepo.isInitialized) {
             mRepo = SessionRepositories().getInstance()
         }
-        mIsUpdating.postValue(true)
+        mIsUpdating.value=(true)
         createSessionModel = mRepo.createSession(api_key)
-        mIsUpdating.postValue(false)
+        mIsUpdating.value=(false)
 
     }
 
@@ -41,9 +42,11 @@ class MainActivityViewModel : ViewModel() {
         if (!this::mRepo.isInitialized) {
             mRepo = SessionRepositories().getInstance()
         }
-        mIsUpdating.postValue(true)
-        thinkThought = mRepo.thinkThought(api_key,sessionId,input)
-        mIsUpdating.postValue(false)
+        mIsUpdating.value=(true)
+        mRepo.thinkThought(api_key,sessionId,input).observeForever {
+            thinkThought.value=it
+            mIsUpdating.value=(false)
+        }
 
     }
 
@@ -60,7 +63,7 @@ class MainActivityViewModel : ViewModel() {
         return thinkThought
     }
 
-    fun getIsLoading(): MutableLiveData<Boolean>? {
+    fun getIsLoading(): LiveData<Boolean> {
         return mIsUpdating
     }
 

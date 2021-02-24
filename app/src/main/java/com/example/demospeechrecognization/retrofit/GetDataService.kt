@@ -9,12 +9,12 @@ import retrofit2.http.Query
 
 interface GetDataService {
 
-    @POST("/v1/lydia/session/get")
-    fun getSessions(@Query("api_key") api_key: String,@Query("session_id") session_id: String): Call<GetSessionModel>
+    @GET("v1/lydia/session/get")
+    fun getSessions(@Query("access_key") api_key: String,@Query("session_id") session_id: String): Call<GetSessionModel>
 
-    @POST("/v1/lydia/session/create")
-    fun createSession(@Query("api_key") api_key: String,@Query("target_language") target_language: String): Call<GetSessionModel>
+    @GET("v1/lydia/session/create")
+    fun createSession(@Query("access_key") api_key: String,@Query("target_language") target_language: String): Call<GetSessionModel>
 
-    @POST("/v1/lydia/session/think")
-    fun thinkThought(@Query("api_key") api_key: String,@Query("session_id") session_id: String,@Query("input") input: String): Call<ThinkThoughtModel>
+    @GET("v1/lydia/session/think")
+    fun thinkThought(@Query("access_key") api_key: String, @Query("session_id") session_id: String, @Query("input") input: String): Call<ThinkThoughtModel>
 }

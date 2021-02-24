@@ -1,6 +1,6 @@
 package com.example.demospeechrecognization.models
 
-data class GetSessionModel(val success:Boolean, val response_code:Int, val payload:Payload, val error:Error)
+data class GetSessionModel(val success:Boolean, val response_code:Int, val results:Payload, val error:Error)
 
 data class Payload(val session_id:String,val language:String,val available:Boolean,val expires:Int)
 

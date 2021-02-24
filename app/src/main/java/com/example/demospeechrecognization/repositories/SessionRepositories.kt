@@ -13,6 +13,7 @@ import retrofit2.Response
 class SessionRepositories {
     private var instance: SessionRepositories?=null
     lateinit var session:GetSessionModel
+    lateinit var thinkThoughtModel: ThinkThoughtModel
     var language="en"
 
     fun getInstance(): SessionRepositories {
@@ -77,6 +78,7 @@ class SessionRepositories {
             override fun onResponse(call: Call<ThinkThoughtModel>, response: Response<ThinkThoughtModel>) {
                 if (response.body()!=null) {
                     data.value = response.body()
+                    thinkThoughtModel=response.body()!!
                 }
             }
 
