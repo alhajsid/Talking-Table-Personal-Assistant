@@ -1,18 +1,13 @@
 package com.example.demospeechrecognization
 
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import java.nio.ByteOrder.LITTLE_ENDIAN
-import android.R.attr.order
-import android.R.attr.start
 import kotlinx.android.synthetic.main.activity_login.*
-
 
 class LoginActivity : AppCompatActivity() {
 
@@ -32,12 +27,12 @@ class LoginActivity : AppCompatActivity() {
         }
 
         buttonlogin.setOnClickListener {
-            loginuser()
+            loginUser()
         }
 
     }
 
-    fun loginuser(){
+    private fun loginUser(){
         if (editTextemaillogin.text.isEmpty()||editTextloginpassword.text.isEmpty()){
             editTextemaillogin.error="Enter text"
             return

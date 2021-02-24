@@ -1,6 +1,11 @@
 package com.example.demospeechrecognization
 
+import ai.kitt.snowboy.AppResCopy
+import ai.kitt.snowboy.MsgEnum
+import ai.kitt.snowboy.audio.AudioDataSaver
+import ai.kitt.snowboy.audio.RecordingThread
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -12,26 +17,26 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
-import android.text.format.DateUtils
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.Toast
-import java.util.*
 import android.speech.tts.Voice
+import android.text.format.DateUtils
 import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.demospeechrecognization.farziai.Ailearning
 import com.example.demospeechrecognization.ViewModel.MainActivityViewModel
 import com.example.demospeechrecognization.adator.ContactAdaptor
 import com.example.demospeechrecognization.adator.JarvisAdaptor
 import com.example.demospeechrecognization.adator.SearchGoogleAdaptor
 import com.example.demospeechrecognization.adator.UserAdaptor
+import com.example.demospeechrecognization.farziai.Ailearning
 import com.example.demospeechrecognization.models.AudioModel
 import com.example.demospeechrecognization.models.GetSessionModel
 import com.example.demospeechrecognization.models.ThinkThoughtModel
@@ -40,6 +45,7 @@ import com.example.demospeechrecognization.utils.SharedPref
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.*
 import kotlin.collections.ArrayList
 import android.util.Log as Log1
 
@@ -62,7 +68,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var mSpeechRecognizer: SpeechRecognizer
     private var mode = ""
     var amount = 0
-//    val urlmessage = "https://api.intellivoid.info/coffeehouse/v2/thinkThought"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +77,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             val intent = Intent(this, SettingActivity()::class.java)
             startActivity(intent)
         }
+
+
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(
@@ -99,11 +106,48 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    private fun initHotword() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            AppResCopy.copyResFromAssetsToSD(this)
+            val recordingThread = RecordingThread(@SuppressLint("HandlerLeak")
+            object : Handler() {
+                override fun handleMessage(msg: Message) {
+                    when (MsgEnum.getMsgEnum(msg.what)) {
+                        MsgEnum.MSG_ACTIVE -> {
+                            android.util.Log.e("alhaj","MSG_ACTIVE")
+                        }
+                        MsgEnum.MSG_INFO -> {
+                            android.util.Log.e("alhaj","MSG_INFO")
+                        }
+                        MsgEnum.MSG_VAD_SPEECH -> {
+                            android.util.Log.e("alhaj","MSG_VAD_SPEECH")
+                        }
+                        MsgEnum.MSG_VAD_NOSPEECH -> {
+                            android.util.Log.e("alhaj","MSG_VAD_NOSPEECH")
+                        }
+                        MsgEnum.MSG_ERROR -> {
+                            android.util.Log.e("alhaj","MSG_ERROR")
+                        }
+                        else -> {
+                            android.util.Log.e("alhaj","else")
+                            super.handleMessage(msg)
+                        }
+                    }
+                }
+            }, AudioDataSaver())
+            recordingThread.startRecording()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 9) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED && grantResults[3] == PackageManager.PERMISSION_GRANTED)
@@ -240,7 +284,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         return true
     }
 
-    private fun moibility(command: String) {
+    private fun mobility(command: String) {
         if (command.indexOf("off") != -1) {
 //            if (command.indexOf("bluetooth") != -1) {
 //
@@ -394,7 +438,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
 
         if (finalResult.startsWith("Turning")) {
-            moibility(finalResult)
+            mobility(finalResult)
         }
 
         if (finalResult.startsWith("searchitfriday")) {
