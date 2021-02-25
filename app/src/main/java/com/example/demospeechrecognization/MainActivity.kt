@@ -42,6 +42,11 @@ import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.services.MainService
 import com.example.demospeechrecognization.utils.CustomAppCompatActivity
 import com.example.demospeechrecognization.utils.SharedPref
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.content_main.*
@@ -67,12 +72,24 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
     private var adaptorMain = GroupAdapter<ViewHolder>()
     private lateinit var myTTS: TextToSpeech
     private lateinit var mSpeechRecognizer: SpeechRecognizer
-    private var mode = ""
-    var amount = 0
+    lateinit var appUpdateManager: AppUpdateManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            handleAppUpdateInfo(appUpdateInfo)
+        }
+        appUpdateInfoTask.addOnCompleteListener {
+            try {
+                showToast(it.exception!!.message!!)
+            }catch (e:java.lang.Exception){
+
+            }
+        }
 
         btn_setting.setOnClickListener {
             val intent = Intent(this, SettingActivity()::class.java)
@@ -102,7 +119,27 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         } else {
             mainInit()
         }
+    }
 
+    private fun handleAppUpdateInfo(appUpdateInfo: AppUpdateInfo?) {
+        when (appUpdateInfo?.updateAvailability()) {
+            UpdateAvailability.UPDATE_AVAILABLE -> {
+                appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE,
+                    this,
+                    9877
+                )
+                showToast("UPDATE_AVAILABLE")
+            }
+            UpdateAvailability.UPDATE_NOT_AVAILABLE -> {
+                showToast("UPDATE_NOT_AVAILABLE")
+            }
+            UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
+                showToast("DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS")
+            }
+            else -> {
+                showToast("ERROR_UPDATE_UNKNOWN")
+            }
+        }
     }
 
     private fun initHotword() {
@@ -172,7 +209,6 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         try {
             
             checkSession()
-
             mainActivityViewModel.getCreateSessionModel().observe(this,
                 Observer<GetSessionModel> {
                     if (it.success && it.response_code==200){
@@ -217,8 +253,6 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                 })
 
             fab.setOnClickListener {
-                Log1.e("fab.onlcicklistner", "$mode $amount")
-
                 // unmute()
                 if (NetworkState.connectionAvailable(this)) {
                     startListening()
@@ -376,7 +410,6 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                     )
                     val finalresult = results!![0].toLowerCase(Locale.getDefault())
                     choosingResult(finalresult)
-                    amount -= 1
                 }
 
                 override fun onPartialResults(bundle: Bundle) {
