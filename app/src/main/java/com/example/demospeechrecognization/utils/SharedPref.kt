@@ -17,4 +17,13 @@ class SharedPref(val context: Context) {
         pref.edit().putString(key,value).apply()
     }
 
+    var state: Boolean
+        get() = pref.getBoolean("THEME_MODE", true)
+        set(bVal) {
+            val editor = pref.edit()
+            editor.putBoolean("THEME_MODE", bVal)
+            editor.apply()
+        }
+
+
 }

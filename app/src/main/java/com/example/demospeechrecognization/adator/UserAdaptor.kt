@@ -13,11 +13,6 @@ class UserAdaptor(val text: String, val theme:Int) : Item<ViewHolder>() {
     }
 
     override fun getLayout(): Int {
-        return if(theme==0){
-            R.layout.usertextlayout_light_theme
-        }else{
-            R.layout.usertextlayout_dark_theme
-        }
+        return R.layout.usertextlayout_light_theme
     }
-
 }

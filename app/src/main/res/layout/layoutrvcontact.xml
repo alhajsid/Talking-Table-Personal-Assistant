@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:gravity="center_vertical"
-              android:layout_height="50dp">
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="50dp">
 
     <TextView
             android:layout_width="wrap_content"
@@ -11,22 +12,25 @@
             android:gravity="bottom"
             android:id="@+id/tvchoosecontactname"
             android:textSize="11sp"
-            android:textColor="#80000000"
-            android:paddingLeft="30dp"
+            style="@style/textStyle"
+            android:paddingStart="30dp"
+            android:paddingEnd="0dp"
             android:textStyle="bold"
-            android:layout_height="25dp"/>
+            android:layout_height="25dp" />
+
     <TextView
             android:layout_width="wrap_content"
             android:text="7895720597"
-            android:paddingLeft="30dp"
+            android:paddingStart="30dp"
             android:textSize="12sp"
-            android:textColor="#000000"
+            android:paddingEnd="0dp"
+            style="@style/textStyle"
             android:id="@+id/tvchoosecontactnum"
-            android:layout_height="24dp"/>
+            android:layout_height="24dp" />
+
     <TextView
             android:layout_width="match_parent"
-            android:background="#030000"
-            android:layout_height="1dp"/>
-
+            style="@style/dividerStyle"
+            android:layout_height="1dp" />
 
 </LinearLayout>

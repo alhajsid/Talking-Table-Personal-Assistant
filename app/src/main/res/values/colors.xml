@@ -7,4 +7,13 @@
     <color name="mlackcolor">#000</color>
     <color name="indigo">#7986cb</color>
     <color name="lightblack">#B1B1B1</color>
+
+
+
+    <color name="lightGray">#DFDFDF</color>
+    <color name="darkGray">#777777</color>
+    <color name="black_60">#E0E0E0</color>
+    <color name="nightBackgroundColor">#121212</color>
+    <color name="black_80">#333333</color>
+    <color name="colorWhite">#ffffff</color>
 </resources>

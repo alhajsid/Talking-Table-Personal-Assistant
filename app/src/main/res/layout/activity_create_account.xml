@@ -33,10 +33,10 @@
 
         <EditText
                 android:layout_width="255dp"
-                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
                 android:layout_height="47dp"
                 android:hint="USERNAME"
-                android:theme="@style/medittexttheme"
+
                 android:textColor="#fff"
                 android:textColorHint="#B1B1B1"
                 android:inputType="textPersonName"
@@ -48,7 +48,7 @@
                 app:layout_constraintStart_toStartOf="parent"/>
         <EditText
                 android:layout_width="255dp"
-                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
                 android:layout_height="47dp"
                 android:hint="PASSWORD"
                 android:theme="@style/medittexttheme"
@@ -62,7 +62,7 @@
                 android:layout_marginTop="24dp" app:layout_constraintTop_toBottomOf="@+id/editTextemailsignup"/>
         <EditText
                 android:layout_width="255dp"
-                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
                 android:layout_height="47dp"
                 android:inputType="textEmailAddress"
                 android:hint="EMAIL"

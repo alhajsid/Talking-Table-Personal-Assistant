@@ -4,9 +4,14 @@ import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
+import com.example.demospeechrecognization.utils.CustomAppCompatActivity
+import com.example.demospeechrecognization.utils.SharedPref
 import kotlinx.android.synthetic.main.activity_setting.*
 
-class SettingActivity : AppCompatActivity() {
+class SettingActivity : CustomAppCompatActivity() {
+
+    lateinit var initApplicatio: SharedPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,67 +19,34 @@ class SettingActivity : AppCompatActivity() {
         val sharedPresent=getSharedPreferences("setting", Context.MODE_PRIVATE)
         val volumeUpWake=sharedPresent.getInt("volume_wake",0)
         val theme=sharedPresent.getInt("theme",0)
+        initApplicatio = SharedPref(this)
+
         if(volumeUpWake==1){
             switch_volume_wake.isChecked=true
         }
-        if(theme==1){
-            applyDarkTheme()
-            switch_theme.isChecked=true
-        }
+        switch_theme.isChecked=initApplicatio.state
+
 
         switch_volume_wake.setOnCheckedChangeListener { _, b ->
-            if (b){
+            if (b) {
                 sharedPresent.edit()
-                    .putInt("volume_wake",1).apply()
-            }else{
-                sharedPresent.edit().putInt("volume_wake",0).apply()
+                    .putInt("volume_wake", 1).apply()
+            } else {
+                sharedPresent.edit().putInt("volume_wake", 0).apply()
             }
         }
 
         switch_theme.setOnCheckedChangeListener { _, b ->
-            if (b){
-                sharedPresent.edit().putInt("theme",1).apply()
-                applyDarkTheme()
-            }else{
-                sharedPresent.edit().putInt("theme",0).apply()
-                applyLightTheme()
+
+            if (b) {
+                initApplicatio.state = true
+                delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
+            } else {
+                initApplicatio.state = false
+                delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
             }
         }
 
-    }
-
-    private fun applyDarkTheme(){
-        setting_container.setBackgroundColor(Color.parseColor("#000000"))
-        theme_container.setBackgroundColor(Color.parseColor("#000000"))
-        volume_up_container.setBackgroundColor(Color.parseColor("#000000"))
-
-        setting_main_container.setBackgroundColor(Color.parseColor("#212121"))
-
-        tv_volume_up.setTextColor(Color.parseColor("#ffffff"))
-        tv_setting.setTextColor(Color.parseColor("#ffffff"))
-        tv_theme.setTextColor(Color.parseColor("#ffffff"))
-
-        divider_1.setBackgroundColor(Color.parseColor("#70ffffff"))
-        divider_2.setBackgroundColor(Color.parseColor("#70ffffff"))
-        divider_3.setBackgroundColor(Color.parseColor("#70ffffff"))
-        divider_4.setBackgroundColor(Color.parseColor("#70ffffff"))
-    }
-
-    private fun applyLightTheme(){
-        setting_container.setBackgroundColor(Color.parseColor("#ffffff"))
-        theme_container.setBackgroundColor(Color.parseColor("#ffffff"))
-        volume_up_container.setBackgroundColor(Color.parseColor("#ffffff"))
-
-        setting_main_container.setBackgroundColor(Color.parseColor("#DFDFDF"))
-
-        tv_volume_up.setTextColor(Color.parseColor("#000000"))
-        tv_setting.setTextColor(Color.parseColor("#000000"))
-        tv_theme.setTextColor(Color.parseColor("#000000"))
-
-        divider_1.setBackgroundColor(Color.parseColor("#B1B1B1"))
-        divider_2.setBackgroundColor(Color.parseColor("#B1B1B1"))
-        divider_3.setBackgroundColor(Color.parseColor("#B1B1B1"))
-        divider_4.setBackgroundColor(Color.parseColor("#B1B1B1"))
     }
 
 }

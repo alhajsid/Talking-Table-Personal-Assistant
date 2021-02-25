@@ -10,7 +10,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.net.Uri
@@ -27,8 +26,8 @@ import android.text.format.DateUtils
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.demospeechrecognization.ViewModel.MainActivityViewModel
@@ -41,6 +40,7 @@ import com.example.demospeechrecognization.models.AudioModel
 import com.example.demospeechrecognization.models.GetSessionModel
 import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.services.MainService
+import com.example.demospeechrecognization.utils.CustomAppCompatActivity
 import com.example.demospeechrecognization.utils.SharedPref
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -49,7 +49,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import android.util.Log as Log1
 
-class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
 
     companion object {
         var AppTheme = 0
@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private val accessKey="4f8c34291fc7d0ca9902584930f9c3e29c35c5c9a48167e15db68f994c4492ea1fdaa9999e69c328dca2d23e6fd4114e336012f4beeed183d0a7bdf35317ddfb"
+
     lateinit var sharedPref: SharedPref
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private var adaptorMain = GroupAdapter<ViewHolder>()
@@ -77,8 +78,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             val intent = Intent(this, SettingActivity()::class.java)
             startActivity(intent)
         }
-
-
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(
@@ -209,21 +208,13 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     if (it){
                         fab.isClickable=false
                         txt_thinking.visibility= View.VISIBLE
+                        txt_thinking.text="Thinking.."
                     }
                     else {
                         fab.isClickable=true
                         txt_thinking.visibility= View.GONE
                     }
                 })
-
-            val sharedPresent = getSharedPreferences("setting", Context.MODE_PRIVATE)
-            val theme = sharedPresent.getInt("theme", 0)
-            AppTheme = theme
-            if (theme == 1) {
-                contact_main.setBackgroundColor(Color.parseColor("#000000"))
-            } else {
-                contact_main.setBackgroundColor(Color.parseColor("#ffffff"))
-            }
 
             fab.setOnClickListener {
                 Log1.e("fab.onlcicklistner", "$mode $amount")
@@ -261,7 +252,10 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-        imageButtonicon.setImageDrawable(getDrawable(R.drawable.bubble))
+        fab.isClickable=false
+        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.bubble))
+        txt_thinking.text = "Listening..."
+        txt_thinking.visibility=View.VISIBLE
         //startActivity(intent) // Sends the detected query to search
         mSpeechRecognizer.startListening(intent)
     }
@@ -356,9 +350,11 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
                 override fun onBeginningOfSpeech() {
+
                 }
 
                 override fun onRmsChanged(v: Float) {
+
                 }
 
                 override fun onBufferReceived(bytes: ByteArray) {
@@ -368,11 +364,11 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
                 override fun onError(i: Int) {
-                    imageButtonicon.setImageDrawable(getDrawable(R.drawable.mic))
-
+                    listeningEnd()
                 }
 
                 override fun onResults(bundle: Bundle) {
+                    listeningEnd()
                     Log1.e("onresult", "--")
                     //getting all the matches
                     val results = bundle.getStringArrayList(
@@ -392,10 +388,15 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
+    fun listeningEnd(){
+        fab.isClickable=true
+        txt_thinking.visibility=View.GONE
+        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.mic))
+    }
+
     fun choosingResult(finalResult: String) {
         //unmute()
         processResult(finalResult)
-        imageButtonicon.setImageDrawable(getDrawable(R.drawable.mic))
     }
 
     private fun processResult(command: String) {
@@ -670,17 +671,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     override fun onRestart() {
         super.onRestart()
-
-        val sharedPresent = getSharedPreferences("setting", Context.MODE_PRIVATE)
-        val theme = sharedPresent.getInt("theme", 0)
-        AppTheme = theme
-        adaptorMain.clear()
-
-        if (theme == 1) {
-            contact_main.setBackgroundColor(Color.parseColor("#000000"))
-        } else {
-            contact_main.setBackgroundColor(Color.parseColor("#ffffff"))
-        }
 
         try {
             adaptorMain.clear()

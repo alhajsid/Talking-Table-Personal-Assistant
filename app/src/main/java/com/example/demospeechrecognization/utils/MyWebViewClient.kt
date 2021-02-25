@@ -13,7 +13,7 @@ class MyWebViewClient(val context: Context) : WebViewClient() {
     }
 
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        view?.loadUrl(url)
+        view?.loadUrl(url!!)
         return true
     }
 
