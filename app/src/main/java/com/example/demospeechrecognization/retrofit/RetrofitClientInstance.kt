@@ -12,9 +12,9 @@ object RetrofitClientInstance {
 
     fun retrofitInstance(): Retrofit? {
         val client = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS).build()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS).build()
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
                     .baseUrl(BASE_URL)
@@ -24,5 +24,25 @@ object RetrofitClientInstance {
             }
             return retrofit
         }
+}
+
+object RetrofitClientInstanceSpotify {
+    private var retrofit: Retrofit? = null
+    private const val BASE_URL = "https://api.spotify.com/"
+
+    fun retrofitInstance(): Retrofit? {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS).build()
+        if (retrofit == null) {
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+        }
+        return retrofit
+    }
 }
 

@@ -38,6 +38,7 @@ import com.example.demospeechrecognization.adator.UserAdaptor
 import com.example.demospeechrecognization.farziai.Ailearning
 import com.example.demospeechrecognization.models.AudioModel
 import com.example.demospeechrecognization.models.GetSessionModel
+import com.example.demospeechrecognization.models.SpotifySearch
 import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.services.MainService
 import com.example.demospeechrecognization.utils.CustomAppCompatActivity
@@ -47,14 +48,48 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.protocol.types.PlayerState
+import com.spotify.protocol.types.Track
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kaaes.spotify.webapi.android.SpotifyApi
+import kaaes.spotify.webapi.android.SpotifyService
 import kotlinx.android.synthetic.main.content_main.*
+import retrofit.RequestInterceptor
+import retrofit.RestAdapter
 import java.util.*
 import kotlin.collections.ArrayList
 import android.util.Log as Log1
 
 class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
+
+
+    private val CLIENT_ID = "d0cf2c881afc4897aa6cd8d61f26b674"
+    private val REDIRECT_URI = "http://www.google.com"
+    private var mSpotifyAppRemote: SpotifyAppRemote? = null
+
+    override fun onStart() {
+        super.onStart()
+
+    }
+
+    private fun connected(id:String) {
+        // Play a playlist
+        mSpotifyAppRemote!!.playerApi.play("spotify:track:$id:play")
+
+        // Subscribe to PlayerState
+        mSpotifyAppRemote!!.playerApi
+            .subscribeToPlayerState()
+            .setEventCallback { playerState: PlayerState ->
+                val track: Track? = playerState.track
+                if (track != null) {
+                    Log1.d("MainActivity", track.name.toString() + " by " + track.artist.name)
+                }
+            }
+    }
 
     companion object {
         var AppTheme = 0
@@ -73,6 +108,26 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var myTTS: TextToSpeech
     private lateinit var mSpeechRecognizer: SpeechRecognizer
     lateinit var appUpdateManager: AppUpdateManager
+
+    fun loginSpotify(id:String){
+        val connectionParams: ConnectionParams = ConnectionParams.Builder(CLIENT_ID)
+            .setRedirectUri(REDIRECT_URI)
+            .showAuthView(true)
+            .build()
+
+        SpotifyAppRemote.connect(this, connectionParams,
+            object : Connector.ConnectionListener {
+                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                    mSpotifyAppRemote = spotifyAppRemote
+                    Log1.d("MainActivity", "Connected! Yay!")
+                    connected(id)
+                }
+
+                override fun onFailure(throwable: Throwable) {
+                    Log1.e("MyActivity", throwable.message, throwable)
+                }
+            })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -234,6 +289,8 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                 Observer<ThinkThoughtModel> {
                     if (it.success && it.response_code==200){
                         speak(it.results.output)
+                    }else if(it.response_code==9347){
+                        speak(it.error.message)
                     }else if(it.response_code!=9876){
                         Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -249,6 +306,16 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                     else {
                         fab.isClickable=true
                         txt_thinking.visibility= View.GONE
+                    }
+                })
+
+            mainActivityViewModel.getSpotifySearch().observe(this,
+                Observer<SpotifySearch> {
+                    if (it.tracks.items.isEmpty()){
+                        speak("unable to found this song")
+                    }else {
+                        loginSpotify(it.tracks.items[0].id)
+                        speak("playing ${it.tracks.items[0].name}")
                     }
                 })
 
@@ -494,22 +561,23 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         var finalresult = s.replace("play ", "")
         finalresult = finalresult.replace(" song ", "")
         finalresult = finalresult.replace("song ", "")
-        localSongsList.forEach {
-            if (it.aName.toLowerCase(Locale.getDefault()).indexOf(finalresult) != -1) {
-                val aj = Intent()
-                aj.putExtra("songname", finalresult)
-                aj.component = ComponentName(
-                    "com.example.alhaj.mediaplayer",
-                    "com.example.alhaj.mediaplayer.MyService"
-                )
-                startService(aj)
-                speakError("Playing $finalresult")
-                rvconver.scrollToPosition(adaptorMain.itemCount - 1)
-                return
-            }
-        }
-        speak("No such song found")
-        rvconver.scrollToPosition(adaptorMain.itemCount - 1)
+        mainActivityViewModel.searchSpotify(finalresult)
+//        localSongsList.forEach {
+//            if (it.aName.toLowerCase(Locale.getDefault()).indexOf(finalresult) != -1) {
+//                val aj = Intent()
+//                aj.putExtra("songname", finalresult)
+//                aj.component = ComponentName(
+//                    "com.example.alhaj.mediaplayer",
+//                    "com.example.alhaj.mediaplayer.MyService"
+//                )
+//                startService(aj)
+//                speakError("Playing $finalresult")
+//                rvconver.scrollToPosition(adaptorMain.itemCount - 1)
+//                return
+//            }
+//        }
+//        speak("No such song found")
+//        rvconver.scrollToPosition(adaptorMain.itemCount - 1)
     }
 
     private fun placeCall(finalresult: String) {
