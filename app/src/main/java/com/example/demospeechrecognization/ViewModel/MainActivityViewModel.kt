@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.demospeechrecognization.models.*
 import com.example.demospeechrecognization.repositories.SessionRepositories
+import com.example.demospeechrecognization.utils.Resource
 
 class MainActivityViewModel : ViewModel() {
 
     var getSessionModel: MutableLiveData<GetSessionModel> = MutableLiveData()
     var createSessionModel: MutableLiveData<GetSessionModel> =  MutableLiveData()
     var thinkThought: MutableLiveData<ThinkThoughtModel> = MutableLiveData()
-    var spotifySearch: MutableLiveData<SpotifySearch> = MutableLiveData()
+    var spotifySearch: MutableLiveData<Resource<SpotifySearch>> = MutableLiveData()
 
     lateinit var mRepo: SessionRepositories
     private var mIsUpdating = MutableLiveData(false)
@@ -75,7 +76,7 @@ class MainActivityViewModel : ViewModel() {
         return mIsUpdating
     }
 
-    fun getSpotifySearch(): LiveData<SpotifySearch> {
+    fun getSpotifySearch(): LiveData<Resource<SpotifySearch>> {
         return spotifySearch
     }
 

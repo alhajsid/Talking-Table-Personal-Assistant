@@ -7,6 +7,8 @@ import com.example.demospeechrecognization.models.*
 import com.example.demospeechrecognization.retrofit.RetrofitClientInstance
 import com.example.demospeechrecognization.retrofit.GetDataService
 import com.example.demospeechrecognization.retrofit.RetrofitClientInstanceSpotify
+import com.example.demospeechrecognization.utils.Resource
+import com.example.demospeechrecognization.utils.Status
 import retrofit2.Callback
 import retrofit2.Response
 
@@ -93,8 +95,8 @@ class SessionRepositories {
         })
         return data
     }
-    fun searchSong(q:String): MutableLiveData<SpotifySearch> {
-        val data=MutableLiveData<SpotifySearch>()
+    fun searchSong(q:String): MutableLiveData<Resource<SpotifySearch>> {
+        val data=MutableLiveData<Resource<SpotifySearch>>()
         val service: GetDataService = RetrofitClientInstanceSpotify.retrofitInstance()!!.create(
             GetDataService::class.java
         )
@@ -103,12 +105,14 @@ class SessionRepositories {
 
             override fun onResponse(call: Call<SpotifySearch>, response: Response<SpotifySearch>) {
                 if (response.body()!=null) {
-                    data.value = response.body()
+                    data.value = Resource(Status.SUCCESS,response.body(),null)
+                }else{
+                    data.value = Resource(Status.ERROR,response.body(),response.message())
                 }
             }
 
             override fun onFailure(call: Call<SpotifySearch>, t: Throwable) {
-                Log.e("alhaj","error")
+                data.value = Resource(Status.ERROR,null,t.message)
             }
         })
         return data

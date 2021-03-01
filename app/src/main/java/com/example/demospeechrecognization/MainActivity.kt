@@ -42,7 +42,9 @@ import com.example.demospeechrecognization.models.SpotifySearch
 import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.services.MainService
 import com.example.demospeechrecognization.utils.CustomAppCompatActivity
+import com.example.demospeechrecognization.utils.Resource
 import com.example.demospeechrecognization.utils.SharedPref
+import com.example.demospeechrecognization.utils.Status
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -119,6 +121,7 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
             object : Connector.ConnectionListener {
                 override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
                     mSpotifyAppRemote = spotifyAppRemote
+                    spotifyAppRemote.playerApi
                     Log1.d("MainActivity", "Connected! Yay!")
                     connected(id)
                 }
@@ -285,6 +288,9 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                     }
                 })
 //
+
+
+
             mainActivityViewModel.getThinkThouModel().observe(this,
                 Observer<ThinkThoughtModel> {
                     if (it.success && it.response_code==200){
@@ -310,12 +316,16 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                 })
 
             mainActivityViewModel.getSpotifySearch().observe(this,
-                Observer<SpotifySearch> {
-                    if (it.tracks.items.isEmpty()){
-                        speak("unable to found this song")
-                    }else {
-                        loginSpotify(it.tracks.items[0].id)
-                        speak("playing ${it.tracks.items[0].name}")
+                Observer<Resource<SpotifySearch>> {
+                    if (it.status ==Status.SUCCESS) {
+                        if (it.data!!.tracks.items.isEmpty()) {
+                            speak("unable to found this song")
+                        } else {
+                            loginSpotify(it.data.tracks.items[0].id)
+                            speak("playing ${it.data.tracks.items[0].name}")
+                        }
+                    }else{
+                        speak(it.message!!)
                     }
                 })
 
