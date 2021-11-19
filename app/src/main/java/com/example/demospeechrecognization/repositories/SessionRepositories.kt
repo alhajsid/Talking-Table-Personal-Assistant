@@ -12,18 +12,11 @@ import com.example.demospeechrecognization.utils.BaseResponse
 import retrofit2.Callback
 import retrofit2.Response
 
-class SessionRepositories {
+object SessionRepositories {
     private var instance: SessionRepositories?=null
     lateinit var session:GetSessionModel
     lateinit var thinkThoughtModel: ThinkThoughtModel
     private var language="en"
-
-    fun getInstance(): SessionRepositories {
-        if (instance==null){
-            instance= SessionRepositories()
-        }
-        return instance!!
-    }
 
     fun createSession(api_key:String): MutableLiveData<GetSessionModel> {
         val data=MutableLiveData<GetSessionModel>()

@@ -9,16 +9,18 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 
-abstract class CustomAppCompatActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var loadingDialog: ProgressDialog
-    var initApplication: SharedPref? = null
+    lateinit var sharedPref: SharedPref
     var isInternetAvailable=false
     var isLightTheme=true
-
     var firstTime=true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPref = SharedPref(this)
 
         ConnectionLiveData(this).observe(this, Observer<Boolean> { t ->
             isInternetAvailable=t!!
@@ -42,8 +44,7 @@ abstract class CustomAppCompatActivity : AppCompatActivity() {
     }
 
     override fun setContentView(layoutResID: Int) {
-        initApplication = SharedPref(this)
-        isLightTheme=initApplication!!.state
+        isLightTheme=sharedPref!!.state
         if (isLightTheme) {
             delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
         } else {
@@ -79,7 +80,7 @@ abstract class CustomAppCompatActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        if (initApplication!!.state != isLightTheme){
+        if (sharedPref!!.state != isLightTheme){
             if (isLightTheme) {
                 delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
             } else {

@@ -30,15 +30,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.demospeechrecognization.ViewModel.MainActivityViewModel
+import com.example.demospeechrecognization.viewmodel.MainActivityViewModel
 import com.example.demospeechrecognization.adator.ContactAdaptor
 import com.example.demospeechrecognization.adator.JarvisAdaptor
 import com.example.demospeechrecognization.adator.SearchGoogleAdaptor
 import com.example.demospeechrecognization.adator.UserAdaptor
 import com.example.demospeechrecognization.farziai.Ailearning
 import com.example.demospeechrecognization.models.AudioModel
-import com.example.demospeechrecognization.models.GetSessionModel
-import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.services.MainService
 import com.example.demospeechrecognization.utils.*
 import com.xwray.groupie.GroupAdapter
@@ -48,7 +46,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import android.util.Log as Log1
 
-class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
+class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
     companion object {
         var AppTheme = 0
@@ -59,7 +57,6 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         var localSongsList = ArrayList<AudioModel>()
     }
 
-    lateinit var sharedPref: SharedPref
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private var adaptorMain = GroupAdapter<ViewHolder>()
     private lateinit var myTTS: TextToSpeech
@@ -120,32 +117,33 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             AppResCopy.copyResFromAssetsToSD(this)
-            val recordingThread = RecordingThread(@SuppressLint("HandlerLeak")
-            object : Handler() {
-                override fun handleMessage(msg: Message) {
-                    when (MsgEnum.getMsgEnum(msg.what)) {
-                        MsgEnum.MSG_ACTIVE -> {
-                            android.util.Log.e("alhaj", "MSG_ACTIVE")
-                        }
-                        MsgEnum.MSG_INFO -> {
-                            android.util.Log.e("alhaj", "MSG_INFO")
-                        }
-                        MsgEnum.MSG_VAD_SPEECH -> {
-                            android.util.Log.e("alhaj", "MSG_VAD_SPEECH")
-                        }
-                        MsgEnum.MSG_VAD_NOSPEECH -> {
-                            android.util.Log.e("alhaj", "MSG_VAD_NOSPEECH")
-                        }
-                        MsgEnum.MSG_ERROR -> {
-                            android.util.Log.e("alhaj", "MSG_ERROR")
-                        }
-                        else -> {
-                            android.util.Log.e("alhaj", "else")
-                            super.handleMessage(msg)
+            val recordingThread = RecordingThread(
+                @SuppressLint("HandlerLeak")
+                object : Handler() {
+                    override fun handleMessage(msg: Message) {
+                        when (MsgEnum.getMsgEnum(msg.what)) {
+                            MsgEnum.MSG_ACTIVE -> {
+                                android.util.Log.e("alhaj", "MSG_ACTIVE")
+                            }
+                            MsgEnum.MSG_INFO -> {
+                                android.util.Log.e("alhaj", "MSG_INFO")
+                            }
+                            MsgEnum.MSG_VAD_SPEECH -> {
+                                android.util.Log.e("alhaj", "MSG_VAD_SPEECH")
+                            }
+                            MsgEnum.MSG_VAD_NOSPEECH -> {
+                                android.util.Log.e("alhaj", "MSG_VAD_NOSPEECH")
+                            }
+                            MsgEnum.MSG_ERROR -> {
+                                android.util.Log.e("alhaj", "MSG_ERROR")
+                            }
+                            else -> {
+                                android.util.Log.e("alhaj", "else")
+                                super.handleMessage(msg)
+                            }
                         }
                     }
-                }
-            }, AudioDataSaver()
+                }, AudioDataSaver()
             )
             recordingThread.startRecording()
         }
@@ -226,19 +224,23 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
 
     private fun startListening() {
         Log1.e("startlistening", "111")
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        // intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 5000);
-        intent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-        )
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-        fab.isClickable = false
-        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.bubble))
-        txt_thinking.text = "Listening..."
-        txt_thinking.visibility = View.VISIBLE
-        //startActivity(intent) // Sends the detected query to search
-        mSpeechRecognizer.startListening(intent)
+        if (this::mSpeechRecognizer.isInitialized) {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            // intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 5000);
+            intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+            fab.isClickable = false
+            imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.bubble))
+            txt_thinking.text = "Listening..."
+            txt_thinking.visibility = View.VISIBLE
+            //startActivity(intent) // Sends the detected query to search
+            mSpeechRecognizer.startListening(intent)
+        }else{
+            showToast("Speed recognization not ready")
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -256,7 +258,7 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                 return true
             }
         }
-        return true
+        return false
     }
 
     private fun mobility(command: String) {
@@ -366,6 +368,8 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                 override fun onEvent(i: Int, bundle: Bundle) {
                 }
             })
+        }else{
+            showToast("Speech recognization not available")
         }
     }
 
