@@ -3,10 +3,12 @@ package com.example.demospeechrecognization.repositories
 import android.util.Log
 import retrofit2.Call
 import androidx.lifecycle.MutableLiveData
+import com.example.demospeechrecognization.models.BrainShopResponse
 import com.example.demospeechrecognization.models.GetSessionModel
 import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.retrofit.RetrofitClientInstance
 import com.example.demospeechrecognization.retrofit.GetDataService
+import com.example.demospeechrecognization.utils.BaseResponse
 import retrofit2.Callback
 import retrofit2.Response
 
@@ -84,6 +86,29 @@ class SessionRepositories {
 
             override fun onFailure(call: Call<ThinkThoughtModel>, t: Throwable) {
                 Log.e("alhaj","error")
+            }
+        })
+        return data
+    }
+
+    fun get(bid:String,uid:String,key:String,msg:String): MutableLiveData<BaseResponse<BrainShopResponse>> {
+        val data=MutableLiveData<BaseResponse<BrainShopResponse>>()
+        val service: GetDataService = RetrofitClientInstance.retrofitInstance()!!.create(
+            GetDataService::class.java
+        )
+        val call= service.get(bid, uid, key, msg)
+        call.enqueue(object : Callback<BrainShopResponse> {
+
+            override fun onResponse(call: Call<BrainShopResponse>, response: Response<BrainShopResponse>) {
+                if (response.isSuccessful && response.body()!=null) {
+                    data.value = BaseResponse.success(response.body())
+                }else{
+                    data.value = BaseResponse.error(response.message() ?: "error",null)
+                }
+            }
+
+            override fun onFailure(call: Call<BrainShopResponse>, t: Throwable) {
+                data.value = BaseResponse.error(t.message ?: "error",null)
             }
         })
         return data

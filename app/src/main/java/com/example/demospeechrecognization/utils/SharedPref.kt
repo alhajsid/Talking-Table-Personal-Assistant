@@ -5,17 +5,18 @@ import android.content.SharedPreferences
 
 class SharedPref(val context: Context) {
 
-    val SESSION="SESSION"
+    val pref: SharedPreferences = context.getSharedPreferences("MAIN", Context.MODE_PRIVATE)
 
-    val pref: SharedPreferences =context.getSharedPreferences("MAIN",Context.MODE_PRIVATE)
+    var uid: String
+        get() {
+            return pref.getString("uid", "") ?:""
+        }
+        set(value) {
+            val editor = pref.edit()
+            editor.putString("uid", value)
+            editor.apply()
+        }
 
-    fun getString(key:String):String{
-        return pref.getString(key,"")?:""
-    }
-
-    fun setString(key: String,value:String){
-        pref.edit().putString(key,value).apply()
-    }
 
     var state: Boolean
         get() = pref.getBoolean("THEME_MODE", true)

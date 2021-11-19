@@ -40,8 +40,7 @@ import com.example.demospeechrecognization.models.AudioModel
 import com.example.demospeechrecognization.models.GetSessionModel
 import com.example.demospeechrecognization.models.ThinkThoughtModel
 import com.example.demospeechrecognization.services.MainService
-import com.example.demospeechrecognization.utils.CustomAppCompatActivity
-import com.example.demospeechrecognization.utils.SharedPref
+import com.example.demospeechrecognization.utils.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.content_main.*
@@ -60,8 +59,6 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         var localSongsList = ArrayList<AudioModel>()
     }
 
-    private val accessKey="4f8c34291fc7d0ca9902584930f9c3e29c35c5c9a48167e15db68f994c4492ea1fdaa9999e69c328dca2d23e6fd4114e336012f4beeed183d0a7bdf35317ddfb"
-
     lateinit var sharedPref: SharedPref
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private var adaptorMain = GroupAdapter<ViewHolder>()
@@ -74,11 +71,12 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btn_setting.setOnClickListener {
-            val intent = Intent(this, SettingActivity()::class.java)
-            startActivity(intent)
-        }
+        initView()
+        clickListeners()
 
+    }
+
+    fun initView() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(
                     Manifest.permission.READ_CONTACTS
@@ -102,7 +100,13 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         } else {
             mainInit()
         }
+    }
 
+    private fun clickListeners() {
+        btn_setting.setOnClickListener {
+            val intent = Intent(this, SettingActivity()::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun initHotword() {
@@ -121,105 +125,82 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
                 override fun handleMessage(msg: Message) {
                     when (MsgEnum.getMsgEnum(msg.what)) {
                         MsgEnum.MSG_ACTIVE -> {
-                            android.util.Log.e("alhaj","MSG_ACTIVE")
+                            android.util.Log.e("alhaj", "MSG_ACTIVE")
                         }
                         MsgEnum.MSG_INFO -> {
-                            android.util.Log.e("alhaj","MSG_INFO")
+                            android.util.Log.e("alhaj", "MSG_INFO")
                         }
                         MsgEnum.MSG_VAD_SPEECH -> {
-                            android.util.Log.e("alhaj","MSG_VAD_SPEECH")
+                            android.util.Log.e("alhaj", "MSG_VAD_SPEECH")
                         }
                         MsgEnum.MSG_VAD_NOSPEECH -> {
-                            android.util.Log.e("alhaj","MSG_VAD_NOSPEECH")
+                            android.util.Log.e("alhaj", "MSG_VAD_NOSPEECH")
                         }
                         MsgEnum.MSG_ERROR -> {
-                            android.util.Log.e("alhaj","MSG_ERROR")
+                            android.util.Log.e("alhaj", "MSG_ERROR")
                         }
                         else -> {
-                            android.util.Log.e("alhaj","else")
+                            android.util.Log.e("alhaj", "else")
                             super.handleMessage(msg)
                         }
                     }
                 }
-            }, AudioDataSaver())
+            }, AudioDataSaver()
+            )
             recordingThread.startRecording()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 9) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED && grantResults[3] == PackageManager.PERMISSION_GRANTED)
                 mainInit()
         }
     }
-    
-    private fun checkSession(){
-
-        sharedPref= SharedPref(this)
-
-        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-
-        sessionId=sharedPref.getString(sharedPref.SESSION)
-        if (sessionId==""){
-            mainActivityViewModel.createSession(accessKey)
-        }else{
-            mainActivityViewModel.getSession(accessKey,sessionId)
-        }
-    }
 
     private fun mainInit() {
         try {
-            
-            checkSession()
 
-            mainActivityViewModel.getCreateSessionModel().observe(this,
-                Observer<GetSessionModel> {
-                    if (it.success && it.response_code==200){
-                        sessionId=it.results.session_id
-                        sharedPref.setString(sharedPref.SESSION,it.results.session_id)
-                    }else if(it.response_code!=9876){
-                        Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
-//
-            mainActivityViewModel.getSessionModel().observe(this,
-                Observer<GetSessionModel> {
-                    if (it.success && it.response_code==200){
-                        sessionId=it.results.session_id
-                        sharedPref.setString(sharedPref.SESSION,it.results.session_id)
-                    }else if(it.response_code!=9876){
-                        mainActivityViewModel.createSession(accessKey)
-                        Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
-//
-            mainActivityViewModel.getThinkThouModel().observe(this,
-                Observer<ThinkThoughtModel> {
-                    if (it.success && it.response_code==200){
-                        speak(it.results.output)
-                    }else if(it.response_code!=9876){
-                        Toast.makeText(this, "error ${it.error.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
+            mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
             mainActivityViewModel.getIsLoading().observe(this,
                 Observer<Boolean> {
-                    if (it){
-                        fab.isClickable=false
-                        txt_thinking.visibility= View.VISIBLE
-                        txt_thinking.text="Thinking.."
-                    }
-                    else {
-                        fab.isClickable=true
-                        txt_thinking.visibility= View.GONE
+                    if (it) {
+                        fab.isClickable = false
+                        txt_thinking.visibility = View.VISIBLE
+                        txt_thinking.text = "Thinking.."
+                    } else {
+                        fab.isClickable = true
+                        txt_thinking.visibility = View.GONE
                     }
                 })
+
+            mainActivityViewModel.brainShopResponse.observe(this, Observer {
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        if (it.data != null)
+                            speak(it.data.cnt)
+                    }
+                    Status.ERROR -> {
+
+                    }
+                    Status.LOADING -> {
+
+                    }
+                    Status.FAILED -> {
+
+                    }
+                }
+            })
 
             fab.setOnClickListener {
                 Log1.e("fab.onlcicklistner", "$mode $amount")
 
-                // unmute()
                 if (NetworkState.connectionAvailable(this)) {
                     startListening()
                 } else {
@@ -252,10 +233,10 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-        fab.isClickable=false
-        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.bubble))
+        fab.isClickable = false
+        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.bubble))
         txt_thinking.text = "Listening..."
-        txt_thinking.visibility=View.VISIBLE
+        txt_thinking.visibility = View.VISIBLE
         //startActivity(intent) // Sends the detected query to search
         mSpeechRecognizer.startListening(intent)
     }
@@ -333,9 +314,9 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
 //            val result1 = myTTS.setLanguage(Locale.US);
 //            val result = myTTS.setVoice(v)
 //            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                //val installIntent = Intent()
-                //installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
-                // startActivity(installIntent)
+            //val installIntent = Intent()
+            //installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
+            // startActivity(installIntent)
 //            }
         } else {
             Log1.e("TTS", "Initilization Failed!")
@@ -388,10 +369,10 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
-    fun listeningEnd(){
-        fab.isClickable=true
-        txt_thinking.visibility=View.GONE
-        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.mic))
+    fun listeningEnd() {
+        fab.isClickable = true
+        txt_thinking.visibility = View.GONE
+        imageButtonicon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.mic))
     }
 
     fun choosingResult(finalResult: String) {
@@ -649,11 +630,12 @@ class MainActivity : CustomAppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun sendMessage(s: String) {
-        if (sessionId == "") {
-            checkSession()
-            return
+        var uid = sharedPref.uid
+        if (uid == "") {
+            uid = System.currentTimeMillis().toString()
+            sharedPref.uid = uid
         }
-        mainActivityViewModel.thinkThought(accessKey, sessionId,s)
+        mainActivityViewModel.get(bid, uid, key, s)
     }
 
     private fun onTTSSpeechFinished() {

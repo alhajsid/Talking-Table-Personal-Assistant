@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClientInstance {
     private var retrofit: Retrofit? = null
-    private const val BASE_URL = "https://api.intellivoid.net/coffeehouse/"
+    private const val BASE_URL = "http://api.brainshop.ai/"
 
     fun retrofitInstance(): Retrofit? {
         val client = OkHttpClient.Builder()
