@@ -31,12 +31,11 @@ class SettingActivity : BaseActivity() {
         }
 
         switch_theme.setOnCheckedChangeListener { _, b ->
-
             if (b) {
-                sharedPref.state = false
+                sharedPref.state = true
                 delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
             } else {
-                sharedPref.state = true
+                sharedPref.state = false
                 delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
             }
         }

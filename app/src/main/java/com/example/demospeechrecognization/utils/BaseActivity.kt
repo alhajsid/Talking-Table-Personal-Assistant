@@ -44,11 +44,11 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun setContentView(layoutResID: Int) {
-        isLightTheme=sharedPref!!.state
+        isLightTheme=sharedPref.state
         if (isLightTheme) {
-            delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
-        } else {
             delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
         }
         super.setContentView(layoutResID)
     }
@@ -80,7 +80,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        if (sharedPref!!.state != isLightTheme){
+        if (sharedPref.state != isLightTheme){
+            isLightTheme = sharedPref.state
             if (isLightTheme) {
                 delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
             } else {
